@@ -1,0 +1,55 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: npm start
+    restart: always
+    volumes:
+      - .:/usr/src/app
+      # NOTE: If you are using Windows, you might want to uncomment this
+      # - /usr/src/app/node_modules # https://stackoverflow.com/a/32785014
+    depends_on:
+      - db
+    ports:
+      - '8080:8080'
+      - '9229:9229'
+    tty: true
+
+  db:
+    image: postgres:12.4-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    volumes:
+      - postgres12-data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - '8888:8080'
+    environment:
+      ADMINER_PLUGINS: 'tables-filter tinymce'
+      ADMINER_DESIGN: 'price'
+
+  redis:
+    image: redis:6-alpine
+    restart: always
+    volumes:
+      - redis6-data:/data
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    restart: always
+    ports:
+      - '8889:8081'
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+
+volumes:
+  postgres12-data:
+  redis6-data:
+    # external: true # https://github.com/docker/for-win/issues/445#issuecomment-405185621

@@ -1,0 +1,29 @@
+type User implements Node {
+  id: GUID!
+  username: String
+  email: String
+  userType: UserType
+  permissions: JSON
+}
+
+enum UserType {
+  OPERATOR
+  CASHIER
+  PLAYER
+  ADMIN
+  MANAGER
+}
+
+enum GameStatus {
+  OPEN
+  CLOSE
+  FINISHED
+  REVERSE
+  CANCEL
+}
+
+enum BetSides {
+  MERON
+  WALA
+  DRAW
+}
