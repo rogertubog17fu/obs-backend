@@ -6,4 +6,5 @@ export {
   GameStatus,
   BetSides,
   UserType,
+  SortDirection
 } from '@app/core/enums';

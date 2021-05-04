@@ -2,10 +2,14 @@ import { MainGameLogModel } from '@app/db/models'
 
 async function create(form: MainGameLogModel): Promise<MainGameLogModel> {
     return MainGameLogModel.query().insertAndFetch(form);
-  }
+}
 
 async function getByIds(ids: string[]): Promise<MainGameLogModel[]> {
   return MainGameLogModel.query().findByIds(ids);
+}
+
+async function getAll(): Promise<MainGameLogModel[]> {
+  return MainGameLogModel.query()
 }
 
 async function getFilterBy(totalBetMeron: number, totalBetWala: number, lastcallToClosedGap: number, arenaId: string): Promise<MainGameLogModel> {
@@ -32,5 +36,6 @@ export const mainGameLogService = {
     create,
     getByIds,
     isExistByFightNumberArenaId,
-    getFilterBy
+    getFilterBy,
+    getAll
 };

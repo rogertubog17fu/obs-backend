@@ -69,4 +69,6 @@ export class MainGameLogModel extends BaseModel {
 
     createdAt!: Date;
     updatedAt!: Date;
+
+    arena?: ArenaModel
 }

@@ -3,3 +3,4 @@ export * from './bet-sides.enum';
 export * from './user-type.enum';
 export * from './system-role.enum';
 export * from './winner.enum';
+export * from './sort-direction.enum';
