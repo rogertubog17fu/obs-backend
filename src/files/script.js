@@ -46,7 +46,6 @@ var timeGameOpen = 0
 
 var lastcallToClosedGap = 0
 var openTolastcallGap = 0
-var draw_winner = null
 var anouncement = ''
 
 document.getElementsByClassName("hero-unit__subtitle text-primary")[0].innerText="";
@@ -117,7 +116,6 @@ let observer = new MutationObserver(mutationRecords => {
         console.log("inside open");
         printStatusConsole();
         winnerIsTriggered=false;
-        draw_winner = null
 
         lastcallToClosedGap = 0
     }
@@ -139,7 +137,6 @@ let observer = new MutationObserver(mutationRecords => {
     }
     else if((walaWinner == "DRAW" && meronWinner == "DRAW") && winnerIsTriggered==false){
         winnerIsTriggered=true;
-        draw_winner = "Draw"
         console.log("inside DRAW winner");
         printStatusConsole();
     }
