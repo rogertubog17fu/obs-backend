@@ -2,11 +2,11 @@
 
 // ==UserScript==
 // @name         obsscriptscrapper 3.0
-// @namespace    https://sl618.live/
+// @namespace    https://wpc2021.live/
 // @version      0.1
 // @description  this is a obs plugin test
 // @author       Benjo Asenas
-// @match        https://sl618.live/*
+// @match        https://wpc2021.live/*
 // @grant        none
 // ==/UserScript==
 

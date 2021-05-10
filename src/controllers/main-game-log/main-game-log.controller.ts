@@ -84,6 +84,9 @@ export const postMainGameLog: RequestHandler = async (req, res) => {
         anouncement
     } = req.body as IGamePostRequest
 
+    let newOpenTolastcallGap = openTolastcallGap
+    let newLastcallToClosedGap = lastcallToClosedGap
+
     if (!(await arenaService.isExistByEventTitle(eventTitle))) {
       const arenaForm = new ArenaModel();
 
@@ -92,6 +95,14 @@ export const postMainGameLog: RequestHandler = async (req, res) => {
       });
 
       await arenaService.create(arenaForm);
+    }
+
+    // checkOpenToCloseGap
+    if(openTolastcallGap > 14400) { // 14400 = 4 hours
+      newOpenTolastcallGap = 0
+    }
+    else if(lastcallToClosedGap > 14400) {
+      newLastcallToClosedGap = 0
     }
 
     const arena = await arenaService.getByEventTitle(eventTitle);
@@ -109,8 +120,8 @@ export const postMainGameLog: RequestHandler = async (req, res) => {
         totalBetMeron,
         totalBetWala,
         mainBalancePoints,
-        lastcallToClosedGap,
-        openTolastcallGap,
+        lastcallToClosedGap: newLastcallToClosedGap,
+        openTolastcallGap: newOpenTolastcallGap,
         betWala,
         betMeron,
         betDraw,
