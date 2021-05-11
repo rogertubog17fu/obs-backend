@@ -68,7 +68,7 @@ export const env: IEnvironmentConfig = {
 };
 
 // Development environment defaults
-if (APP_ENV === Environment.DEVELOPMENT) {
+if (APP_ENV === Environment.DEVELOPMENT || APP_ENV === Environment.PRODUCTION) {
   env.postgresConnectionUrl = 'postgresql://postgres:password@db:5432/db';
   env.redisConnectionUrl = 'redis://redis';
 }
