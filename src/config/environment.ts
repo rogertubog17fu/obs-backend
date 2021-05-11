@@ -40,7 +40,7 @@ function initEnvironment(currentEnvironment: Environment) {
 }
 
 // NOTE: Modify this variable to switch environments during local development
-const CURRENT_ENVIRONMENT = Environment.DEVELOPMENT;
+const CURRENT_ENVIRONMENT = Environment.PRODUCTION;
 
 const { APP_ENV, NODE_ENV } = initEnvironment(CURRENT_ENVIRONMENT);
 
