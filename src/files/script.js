@@ -230,8 +230,8 @@ function setElements(){
     betMeron = document.getElementsByClassName("card-body p-2 pb-0")[0].children[2].children[0].children[0].innerText
     betWala = document.getElementsByClassName("card-body p-2 pb-0")[0].children[2].children[1].children[0].innerText
     betDraw = document.getElementsByClassName("card-body p-2 pb-0")[0].children[4].children[1].innerText
-    totalBetMeron = parseInt(document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[0].children[0].innerText) ?? 0
-    totalBetWala = parseInt(document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[1].children[0].innerText) ?? 0
+    totalBetMeron = parseInt(document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[0].children[0].innerText.replace(',','')) ?? 0
+    totalBetWala = parseInt(document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[1].children[0].innerText.replace(',','')) ?? 0
 
 
     sendData(arenaURL,ArenaTitle);
