@@ -2,6 +2,10 @@ import { RequestHandler } from 'express';
 import { GameStatus, Winner } from 'src/core/enums';
 import { mainGameLogService, arenaService } from 'src/core/services';
 import { ArenaModel, MainGameLogModel } from '@app/db/models';
+import { Maybe } from '@app/graphql-schema-types';
+import { OrderByDirection } from 'objection';
+import { MainGameLogSortField, SortDirection } from '@app/core/enums';
+import { IPageInfo } from '@app/core/interfaces';
 
 // import fs from 'fs';
 
@@ -25,39 +29,41 @@ interface IGamePostRequest {
   anouncement: string
 }
 
+interface IMainGameLogCursorPaginatedArgs {
+  before?: Maybe<string>;
+  after?: Maybe<string>;
+  first: number;
+  sortDirection: OrderByDirection;
+  sortField: MainGameLogSortField;
+  search?: Maybe<string>;
+}
+
+interface IGetMainGameLogResponse {
+  nodes: MainGameLogModel[],
+  pageInfo: IPageInfo,
+  totalCount: number
+}
+
 export const getMainGameLog: RequestHandler = async (req, res) => {
-  // const mainGameLog = await mainGameLogService.getAll()
 
-  const mainGameLogs = await mainGameLogService.getAll()
-  const resMainGameLogs: IGamePostRequest[] = []
+  const { before, after, first, sortDirection, sortField, search} = req.body as IMainGameLogCursorPaginatedArgs
 
-  // fs.writeFileSync(mainGameLogPath, '', 'utf8');
+  const result = await mainGameLogService.getCursorPaginated({
+    before,
+    after,
+    first: first ?? 25,
+    sortDirection: sortDirection ?? SortDirection.ASC,
+    sortField: sortField ?? MainGameLogSortField.CREATED_AT,
+    search,
+  });
 
-  await Promise.all(
-    mainGameLogs.map(async (log) =>
-    {
-      const arena = await arenaService.getById(log.arenaId)
-      resMainGameLogs.push({
-        eventTitle: arena.eventTitle,
-        fightNumber: log.fightNumber,
-        status: log.gameStatus,
-        winner: log.winner,
-        payoutMeron: log.payoutMeron,
-        payoutWala: log.payoutWala,
-        totalBetMeron: log.totalBetMeron,
-        totalBetWala: log.totalBetWala,
-        lastcallToClosedGap: log.lastcallToClosedGap,
-        openTolastcallGap: log.openTolastcallGap,
-        mainBalancePoints: log.mainBalancePoints,
-        betWala: log.betWala,
-        betMeron: log.betMeron,
-        betDraw: log.betDraw,
-        anouncement: log.anouncement
-      })
-      // fs.writeFileSync(mainGameLogPath,`${fs.readFileSync(mainGameLogPath, 'utf8')}${arena.eventTitle}*${log.fightNumber}*${log.gameStatus}*${log.winner}*${log.payoutMeron}*${log.payoutWala}*${log.totalBetMeron}*${log.totalBetWala}*${log.lastcallToClosedGap}*${log.openTolastcallGap}*${log.mainBalancePoints}*${log.betMeron}*${log.betWala}*${log.betDraw}*${log.anouncement}\r\n`, 'utf8');
-    })
-  )
-  res.send(resMainGameLogs);
+  const response: IGetMainGameLogResponse = {
+    nodes: result.results.map((x) => x.data),
+    pageInfo: result.pageInfo,
+    totalCount: result.totalCount,
+  };
+
+  res.send(response);
 }
 
 
