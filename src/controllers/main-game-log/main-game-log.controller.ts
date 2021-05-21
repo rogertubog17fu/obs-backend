@@ -44,11 +44,16 @@ interface IGetMainGameLogResponse {
   totalCount: number
 }
 
-interface Bets {
+interface BetSide {
   createdAt: Date;
   currentTotal: number;
   increaseAmount: number;
   increasePercent: number;
+}
+
+interface Bets {
+  meron: BetSide
+  wala: BetSide
 }
 
 interface Odds{
@@ -63,8 +68,7 @@ interface Odds{
 interface IGame {
   gameFightNumber: string;
   winner: Winner;
-  meronBets: Bets[]
-  walaBets: Bets[]
+  bets: Bets[]
   odds: {
     meron: Odds
     wala: Odds
@@ -84,12 +88,12 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
     before,
     after,
     first: first ?? 25,
-    sortDirection: sortDirection ?? SortDirection.ASC,
+    sortDirection: sortDirection ?? SortDirection.DESC,
     sortField: sortField ?? MainGameLogSortField.CREATED_AT,
     search,
   });
 
-  const queryResults = result.results.map((x) => x.data)
+  const queryResults = result.results.map((x) => x.data).reverse()
   let prevTime = 0
 
   // meron
@@ -119,8 +123,7 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
   let walaTotalAccelerationIncreaseCounter = 0
 
 
-  let meronBets: Bets[] = []
-  let walaBets: Bets[] = []
+  let bets: Bets[] = []
 
   let games: IGame[] = []
   const responseNodes: IResponseNodes[] = []
@@ -190,20 +193,24 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
     let walaIncreaseTimePercentage = (walaIncreasePercentage / increaseTime) || 0 // row (I)
     let walaAccelerationIncrease = ((walaIncreaseTimePercentage - walaPrevIncreaseTimePercentage) / increaseTime) || 0 // row (L)
 
+    console.log(mainGameLog.totalBetMeron,',',timeDiffernce,',', meronIncreasePercentage,',', increaseTime,',', walaIncreaseTimePercentage,',',
+     walaAccelerationIncrease)
 
-    // betsMeron #####################
-    meronBets.push({
-      createdAt: mainGameLog.createdAt,
-      currentTotal: mainGameLog.totalBetMeron,
-      increaseAmount: Math.round((meronIncreasePercentage / 100) * finalTotalBetMeron / 100) * 100,
-      increasePercent: meronIncreasePercentage
-    })
-    // betsWala #####################
-    walaBets.push({
-      createdAt: mainGameLog.createdAt,
-      currentTotal: mainGameLog.totalBetWala,
-      increaseAmount: Math.round((walaIncreasePercentage / 100) * finalTotalBetWala / 100) * 100,
-      increasePercent: walaIncreasePercentage
+
+    // bets Meron Wala #####################
+    bets.push({
+      meron: {
+        createdAt: mainGameLog.createdAt,
+        currentTotal: mainGameLog.totalBetMeron,
+        increaseAmount: Math.round((meronIncreasePercentage / 100) * finalTotalBetMeron / 100) * 100,
+        increasePercent: meronIncreasePercentage / 100
+      },
+      wala: {
+        createdAt: mainGameLog.createdAt,
+        currentTotal: mainGameLog.totalBetWala,
+        increaseAmount: Math.round((walaIncreasePercentage / 100) * finalTotalBetWala / 100) * 100,
+        increasePercent: walaIncreasePercentage / 100
+      }
     })
 
 
@@ -221,6 +228,7 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
         // meron
         meronAverageIncreasePerSecond = ((meronTotalIncreaseTimePercentage / meronTotalIncreaseTimePercentageCounter) / 100) * finalTotalBetMeron
         meronAverageAccelerationIncrease = ((meronTotalAccelerationIncrease/ meronTotalAccelerationIncreaseCounter) / 100) * finalTotalBetMeron
+        console.log(meronAverageIncreasePerSecond, meronAverageAccelerationIncrease,'===')
 
         meronTotalIncreaseTimePercentage = 0
         meronTotalIncreaseTimePercentageCounter = 0
@@ -244,8 +252,7 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
         games.push({
           gameFightNumber: mainGameLog.fightNumber,
           winner,
-          meronBets,
-          walaBets,
+          bets,
           odds: {
             meron: {
               averageIncreasePerSecond: meronAverageIncreasePerSecond,
@@ -265,8 +272,7 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
             }
           }
         })
-        meronBets  = []
-        walaBets = []
+        bets  = []
         // END
       }
     }
