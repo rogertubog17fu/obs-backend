@@ -141,7 +141,6 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
     let stopper = false
     let finalTotalBetMeron = mainGameLog.totalBetMeron
     let finalTotalBetWala = mainGameLog.totalBetWala
-    let winner = Winner.WAITING
     let meronPayout = 0
     let walaPayout = 0
 
@@ -157,9 +156,6 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
           finalTotalBetWala = queryResults[(index+counter) -1].totalBetWala
           meronPayout = queryResults[(index+counter) -1].payoutMeron
           walaPayout = queryResults[(index+counter) -1].payoutWala
-        }
-        if(queryResult.winner !== Winner.WAITING) {
-          winner = queryResult.winner
         }
 
         if(mainGameLog.fightNumber !== queryResults[index+counter].fightNumber) {
@@ -193,9 +189,6 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
     let walaIncreaseTimePercentage = (walaIncreasePercentage / increaseTime) || 0 // row (I)
     let walaAccelerationIncrease = ((walaIncreaseTimePercentage - walaPrevIncreaseTimePercentage) / increaseTime) || 0 // row (L)
 
-    console.log(mainGameLog.totalBetMeron,',',timeDiffernce,',', meronIncreasePercentage,',', increaseTime,',', walaIncreaseTimePercentage,',',
-     walaAccelerationIncrease)
-
 
     // bets Meron Wala #####################
     bets.push({
@@ -228,7 +221,7 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
         // meron
         meronAverageIncreasePerSecond = ((meronTotalIncreaseTimePercentage / meronTotalIncreaseTimePercentageCounter) / 100) * finalTotalBetMeron
         meronAverageAccelerationIncrease = ((meronTotalAccelerationIncrease/ meronTotalAccelerationIncreaseCounter) / 100) * finalTotalBetMeron
-        console.log(meronAverageIncreasePerSecond, meronAverageAccelerationIncrease,'===')
+        // console.log(meronAverageIncreasePerSecond, meronAverageAccelerationIncrease,'===')
 
         meronTotalIncreaseTimePercentage = 0
         meronTotalIncreaseTimePercentageCounter = 0
@@ -248,10 +241,9 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
         // push game
         const meronOddsRatio = finalTotalBetMeron / (finalTotalBetMeron + finalTotalBetWala)
         const walaOddsRatio = finalTotalBetWala / (finalTotalBetWala + finalTotalBetMeron)
-
         games.push({
           gameFightNumber: mainGameLog.fightNumber,
-          winner,
+          winner: mainGameLog.winner,
           bets,
           odds: {
             meron: {
@@ -309,8 +301,6 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
     prevBetWala = mainGameLog.totalBetWala
     walaPrevIncreaseTimePercentage = walaIncreaseTimePercentage
   })
-
-  console.log(responseNodes)
 
 
   const response: IGetMainGameLogResponse = {
