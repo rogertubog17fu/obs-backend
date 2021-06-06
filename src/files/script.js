@@ -38,6 +38,7 @@ var betWala = document.getElementsByClassName("card-body p-2 pb-0")[0].children[
 var betDraw = document.getElementsByClassName("card-body p-2 pb-0")[0].children[4].children[1].innerText
 var totalBetMeron = document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[0].children[0].innerText
 var totalBetWala = document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[1].children[0].innerText
+var username = document.getElementsByClassName('dropdown-menu')[0].children[0].innerText
 
 var statusTracker="OPEN";
 var anouncementTracker = ""
@@ -203,12 +204,13 @@ function printStatusConsole(){
         betMeron: betMeron,
         betDraw: betDraw,
         anouncement: anouncement,
+        username: username
     });
 
     console.log('json =', jsonData);
 
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:8081/api/v1/games", true);
+    xhr.open("POST", "http://localhost:9999/api/v1/games", true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(jsonData);
 
@@ -230,8 +232,9 @@ function setElements(){
     betMeron = document.getElementsByClassName("card-body p-2 pb-0")[0].children[2].children[0].children[0].innerText
     betWala = document.getElementsByClassName("card-body p-2 pb-0")[0].children[2].children[1].children[0].innerText
     betDraw = document.getElementsByClassName("card-body p-2 pb-0")[0].children[4].children[1].innerText
-    totalBetMeron = parseInt(document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[0].children[0].innerText.replace(',','')) ?? 0
-    totalBetWala = parseInt(document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[1].children[0].innerText.replace(',','')) ?? 0
+    totalBetMeron = parseInt(document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[0].children[0].innerText.split(',').join('')) ?? 0
+    totalBetWala = parseInt(document.getElementsByClassName("card-body p-2 pb-0")[0].children[1].children[1].children[0].innerText.split(',').join('')) ?? 0
+    username = document.getElementsByClassName('dropdown-menu')[0].children[0].innerText
 
 
     sendData(arenaURL,ArenaTitle);
