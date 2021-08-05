@@ -44,6 +44,12 @@ interface IGetMainGameLogResponse {
   totalCount: number
 }
 
+interface IGetMainGameLogResponse2 {
+  nodes: MainGameLogModel[],
+  pageInfo: IPageInfo,
+  totalCount: number
+}
+
 interface BetSide {
   createdAt: Date;
   currentTotal: number;
@@ -310,6 +316,28 @@ export const getMainGameLog: RequestHandler = async (req, res) => {
   };
 
   res.send(response);
+}
+
+export const getMainGameLogData: RequestHandler = async (req, res) => {
+  const { before, after, first, sortDirection, sortField, search} = req.body as IMainGameLogCursorPaginatedArgs
+
+  const result = await mainGameLogService.getCursorPaginated({
+    before,
+    after,
+    first: first ?? 25,
+    sortDirection: sortDirection ?? SortDirection.DESC,
+    sortField: sortField ?? MainGameLogSortField.CREATED_AT,
+    search,
+  });
+
+  const response: IGetMainGameLogResponse2 = {
+    nodes: result.results.map((x) => x.data),
+    pageInfo: result.pageInfo,
+    totalCount: result.totalCount,
+  };
+
+  res.send(response);
+
 }
 
 
